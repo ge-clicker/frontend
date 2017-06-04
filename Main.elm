@@ -318,7 +318,7 @@ selectView : Html Msg
 selectView =
     select []
         [ option [ onMouseDown (Selected TenMins), value "ten_minutes" ]
-            [ text "10 Minutes" ]
+            [ text "30 Seconds" ]
         , option [ onMouseDown (Selected Hour), value "one_hour" ]
             [ text "1 Hour" ]
         , option [ onMouseDown (Selected Day), value "one_day" ]

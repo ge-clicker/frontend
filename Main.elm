@@ -6,7 +6,7 @@ import Json.Decode as Decode exposing (Decoder)
 import Json.Encode as Encode
 import Html exposing (Html, body, div, h1, img, option, program, select, text)
 import Html.Attributes exposing (align, src, style, value)
-import Html.Events exposing (onClick)
+import Html.Events exposing (onClick, onMouseDown)
 import Http
 import Json.Decode.Pipeline exposing (decode, hardcoded, optional, required)
 import List
@@ -99,7 +99,7 @@ init =
     ( { parties = []
       , myClicks = []
       , lastReceiveTime = 0
-      , getter = .total
+      , getter = .mins
       }
     , Http.send InitialRequest <| Http.get (api "party") initialDecoder
     )
@@ -206,21 +206,22 @@ update msg model =
                 )
 
             Selected s ->
-                ( { model
-                    | getter =
-                        case s of
-                            TenMins ->
-                                .mins
+                ( Debug.log "selected model"
+                    { model
+                        | getter =
+                            case s of
+                                TenMins ->
+                                    .mins
 
-                            Hour ->
-                                .hour
+                                Hour ->
+                                    .hour
 
-                            Day ->
-                                .day
+                                Day ->
+                                    .day
 
-                            Total ->
-                                .total
-                  }
+                                Total ->
+                                    .total
+                    }
                 , Cmd.none
                 )
 
@@ -290,7 +291,8 @@ view model =
             [ style
                 [ ( "height", "100%" ) ]
             ]
-            [ div
+            [ selectView
+            , div
                 [ style
                     [ ( "display", "flex" )
                     , ( "flex-direction", "row" )
@@ -298,18 +300,16 @@ view model =
                     , ( "height", "90%" )
                     ]
                 ]
-                (selectView
-                    :: (List.map
-                            (\party ->
-                                case find (\click -> click.id == party.id) model.myClicks of
-                                    Just click ->
-                                        viewParty party click.count minMax model.getter
+                (List.map
+                    (\party ->
+                        case find (\click -> click.id == party.id) model.myClicks of
+                            Just click ->
+                                viewParty party click.count minMax model.getter
 
-                                    Nothing ->
-                                        viewParty party 0 minMax model.getter
-                            )
-                            model.parties
-                       )
+                            Nothing ->
+                                viewParty party 0 minMax model.getter
+                    )
+                    model.parties
                 )
             ]
 
@@ -317,13 +317,13 @@ view model =
 selectView : Html Msg
 selectView =
     select []
-        [ option [ onClick (Selected TenMins), value "ten_minutes" ]
+        [ option [ onMouseDown (Selected TenMins), value "ten_minutes" ]
             [ text "10 Minutes" ]
-        , option [ onClick (Selected Hour), value "one_hour" ]
+        , option [ onMouseDown (Selected Hour), value "one_hour" ]
             [ text "1 Hour" ]
-        , option [ onClick (Selected Day), value "one_day" ]
+        , option [ onMouseDown (Selected Day), value "one_day" ]
             [ text "1 Day" ]
-        , option [ onClick (Selected Total), value "all_time" ]
+        , option [ onMouseDown (Selected Total), value "all_time" ]
             [ text "All time" ]
         ]
 

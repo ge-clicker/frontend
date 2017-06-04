@@ -371,7 +371,7 @@ viewParty party myClicks ( mn, mx ) getter =
                 |> (+) myClicks
 
         pos =
-            (toFloat <| numClicks - mn) / (toFloat <| mx - mn)
+            (toFloat <| numClicks - mn) / (toFloat <| 1 + mx - mn)
     in
         div
             [ onClick (ClickEvent party.id)

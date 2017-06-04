@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html><head><meta charset="UTF-8"><title>Main</title><style>html,head,body { padding:0; margin:0; height:100%; }
+<html><head><meta charset="UTF-8"><title>Main</title><style>html,head,body { padding:0; margin:0; }
 body { font-family: calibri, helvetica, arial, sans-serif; }</style><script type="text/javascript">
 (function() {
 'use strict';
@@ -10693,29 +10693,50 @@ var _user$project$Main$Total = {ctor: 'Total'};
 var _user$project$Main$Day = {ctor: 'Day'};
 var _user$project$Main$Hour = {ctor: 'Hour'};
 var _user$project$Main$TenMins = {ctor: 'TenMins'};
+var _user$project$Main$targetValueRoleDecoder = A2(
+	_elm_lang$core$Json_Decode$andThen,
+	function (val) {
+		var _p1 = val;
+		switch (_p1) {
+			case 'ten_minutes':
+				return _elm_lang$core$Json_Decode$succeed(_user$project$Main$TenMins);
+			case 'one_hour':
+				return _elm_lang$core$Json_Decode$succeed(_user$project$Main$Hour);
+			case 'one_day':
+				return _elm_lang$core$Json_Decode$succeed(_user$project$Main$Day);
+			case 'all_time':
+				return _elm_lang$core$Json_Decode$succeed(_user$project$Main$Total);
+			default:
+				return _elm_lang$core$Json_Decode$fail(
+					A2(_elm_lang$core$Basics_ops['++'], 'Invalid Role: ', val));
+		}
+	},
+	_elm_lang$html$Html_Events$targetValue);
 var _user$project$Main$Selected = function (a) {
 	return {ctor: 'Selected', _0: a};
 };
 var _user$project$Main$selectView = A2(
 	_elm_lang$html$Html$select,
-	{ctor: '[]'},
+	{
+		ctor: '::',
+		_0: A2(
+			_elm_lang$html$Html_Events$on,
+			'change',
+			A2(_elm_lang$core$Json_Decode$map, _user$project$Main$Selected, _user$project$Main$targetValueRoleDecoder)),
+		_1: {ctor: '[]'}
+	},
 	{
 		ctor: '::',
 		_0: A2(
 			_elm_lang$html$Html$option,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Events$onMouseDown(
-					_user$project$Main$Selected(_user$project$Main$TenMins)),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$value('ten_minutes'),
-					_1: {ctor: '[]'}
-				}
+				_0: _elm_lang$html$Html_Attributes$value('ten_minutes'),
+				_1: {ctor: '[]'}
 			},
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html$text('30 Seconds'),
+				_0: _elm_lang$html$Html$text('5 Seconds'),
 				_1: {ctor: '[]'}
 			}),
 		_1: {
@@ -10724,17 +10745,12 @@ var _user$project$Main$selectView = A2(
 				_elm_lang$html$Html$option,
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Events$onMouseDown(
-						_user$project$Main$Selected(_user$project$Main$Hour)),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$value('one_hour'),
-						_1: {ctor: '[]'}
-					}
+					_0: _elm_lang$html$Html_Attributes$value('one_hour'),
+					_1: {ctor: '[]'}
 				},
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html$text('1 Hour'),
+					_0: _elm_lang$html$Html$text('30 Seconds'),
 					_1: {ctor: '[]'}
 				}),
 			_1: {
@@ -10743,17 +10759,12 @@ var _user$project$Main$selectView = A2(
 					_elm_lang$html$Html$option,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onMouseDown(
-							_user$project$Main$Selected(_user$project$Main$Day)),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$value('one_day'),
-							_1: {ctor: '[]'}
-						}
+						_0: _elm_lang$html$Html_Attributes$value('one_day'),
+						_1: {ctor: '[]'}
 					},
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html$text('1 Day'),
+						_0: _elm_lang$html$Html$text('1 Minute'),
 						_1: {ctor: '[]'}
 					}),
 				_1: {
@@ -10762,13 +10773,8 @@ var _user$project$Main$selectView = A2(
 						_elm_lang$html$Html$option,
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onMouseDown(
-								_user$project$Main$Selected(_user$project$Main$Total)),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$value('all_time'),
-								_1: {ctor: '[]'}
-							}
+							_0: _elm_lang$html$Html_Attributes$value('all_time'),
+							_1: {ctor: '[]'}
 						},
 						{
 							ctor: '::',
@@ -10784,9 +10790,9 @@ var _user$project$Main$ClickEvent = function (a) {
 	return {ctor: 'ClickEvent', _0: a};
 };
 var _user$project$Main$viewParty = F4(
-	function (party, myClicks, _p1, getter) {
-		var _p2 = _p1;
-		var _p3 = _p2._0;
+	function (party, myClicks, _p2, getter) {
+		var _p3 = _p2;
+		var _p4 = _p3._0;
 		var numClicks = A2(
 			F2(
 				function (x, y) {
@@ -10794,7 +10800,7 @@ var _user$project$Main$viewParty = F4(
 				}),
 			myClicks,
 			getter(party.clicks));
-		var pos = _elm_lang$core$Basics$toFloat(numClicks - _p3) / _elm_lang$core$Basics$toFloat(_p2._1 - _p3);
+		var pos = _elm_lang$core$Basics$toFloat(numClicks - _p4) / _elm_lang$core$Basics$toFloat(_p3._1 - _p4);
 		var block = F2(
 			function (flex, colour) {
 				return A2(
@@ -11015,16 +11021,16 @@ var _user$project$Main$view = function (model) {
 			},
 			A2(_elm_lang$core$Debug$log, 'parties', model.parties)));
 	var minMax = function () {
-		var _p4 = {
+		var _p5 = {
 			ctor: '_Tuple2',
 			_0: _elm_lang$core$List$minimum(countClicks),
 			_1: _elm_lang$core$List$maximum(countClicks)
 		};
-		if (((_p4.ctor === '_Tuple2') && (_p4._0.ctor === 'Just')) && (_p4._1.ctor === 'Just')) {
+		if (((_p5.ctor === '_Tuple2') && (_p5._0.ctor === 'Just')) && (_p5._1.ctor === 'Just')) {
 			return A2(
 				_elm_lang$core$Debug$log,
 				'minMax',
-				{ctor: '_Tuple2', _0: _p4._0._0, _1: _p4._1._0});
+				{ctor: '_Tuple2', _0: _p5._0._0, _1: _p5._1._0});
 		} else {
 			return {ctor: '_Tuple2', _0: 0, _1: 1};
 		}
@@ -11073,14 +11079,14 @@ var _user$project$Main$view = function (model) {
 					A2(
 						_elm_lang$core$List$map,
 						function (party) {
-							var _p5 = A2(
+							var _p6 = A2(
 								_elm_community$list_extra$List_Extra$find,
 								function (click) {
 									return _elm_lang$core$Native_Utils.eq(click.id, party.id);
 								},
 								model.myClicks);
-							if (_p5.ctor === 'Just') {
-								return A4(_user$project$Main$viewParty, party, _p5._0.count, minMax, model.getter);
+							if (_p6.ctor === 'Just') {
+								return A4(_user$project$Main$viewParty, party, _p6._0.count, minMax, model.getter);
 							} else {
 								return A4(_user$project$Main$viewParty, party, 0, minMax, model.getter);
 							}
@@ -11101,7 +11107,7 @@ var _user$project$Main$subscriptions = function (model) {
 			_0: A2(
 				_elm_lang$core$Time$every,
 				_elm_lang$core$Time$second,
-				function (_p6) {
+				function (_p7) {
 					return _user$project$Main$SendClicks;
 				}),
 			_1: {ctor: '[]'}
@@ -11137,15 +11143,15 @@ var _user$project$Main$update = F2(
 			_elm_lang$core$Debug$log,
 			_elm_lang$core$Basics$toString(msg),
 			{ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none});
-		var _p7 = msg;
-		switch (_p7.ctor) {
+		var _p8 = msg;
+		switch (_p8.ctor) {
 			case 'InitialRequest':
-				if (_p7._0.ctor === 'Ok') {
+				if (_p8._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{parties: _p7._0._0}),
+							{parties: _p8._0._0}),
 						_1: _user$project$Main$getClicks
 					};
 				} else {
@@ -11156,8 +11162,8 @@ var _user$project$Main$update = F2(
 					ctor: '_Tuple2',
 					_0: model,
 					_1: function () {
-						var _p8 = model.myClicks;
-						if (_p8.ctor === '[]') {
+						var _p9 = model.myClicks;
+						if (_p9.ctor === '[]') {
 							return _user$project$Main$getClicks;
 						} else {
 							return _user$project$Main$sendClicks(model.myClicks);
@@ -11165,38 +11171,38 @@ var _user$project$Main$update = F2(
 					}()
 				};
 			case 'ClickEvent':
-				var _p11 = _p7._0;
+				var _p12 = _p8._0;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
 							myClicks: function () {
-								var _p9 = A2(
+								var _p10 = A2(
 									_elm_community$list_extra$List_Extra$findIndex,
 									function (click) {
-										return _elm_lang$core$Native_Utils.eq(click.id, _p11);
+										return _elm_lang$core$Native_Utils.eq(click.id, _p12);
 									},
 									model.myClicks);
-								if (_p9.ctor === 'Just') {
-									var _p10 = A3(
+								if (_p10.ctor === 'Just') {
+									var _p11 = A3(
 										_elm_community$list_extra$List_Extra$updateAt,
-										_p9._0,
+										_p10._0,
 										function (click) {
 											return _elm_lang$core$Native_Utils.update(
 												click,
 												{count: click.count + 1});
 										},
 										model.myClicks);
-									if (_p10.ctor === 'Just') {
-										return _p10._0;
+									if (_p11.ctor === 'Just') {
+										return _p11._0;
 									} else {
 										return model.myClicks;
 									}
 								} else {
 									return {
 										ctor: '::',
-										_0: {count: 1, id: _p11},
+										_0: {count: 1, id: _p12},
 										_1: model.myClicks
 									};
 								}
@@ -11205,7 +11211,7 @@ var _user$project$Main$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'ReceiveClicks':
-				if (_p7._0.ctor === 'Ok') {
+				if (_p8._0.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
@@ -11214,16 +11220,16 @@ var _user$project$Main$update = F2(
 								parties: A2(
 									_elm_lang$core$List$map,
 									function (party) {
-										var _p12 = A2(
+										var _p13 = A2(
 											_elm_community$list_extra$List_Extra$find,
 											function (r) {
 												return _elm_lang$core$Native_Utils.eq(r.id, party.id);
 											},
-											_p7._0._0);
-										if (_p12.ctor === 'Just') {
+											_p8._0._0);
+										if (_p13.ctor === 'Just') {
 											return _elm_lang$core$Native_Utils.update(
 												party,
-												{clicks: _p12._0.clicks});
+												{clicks: _p13._0.clicks});
 										} else {
 											return party;
 										}
@@ -11241,7 +11247,7 @@ var _user$project$Main$update = F2(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{lastReceiveTime: _p7._0}),
+						{lastReceiveTime: _p8._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'Selected':
@@ -11254,8 +11260,8 @@ var _user$project$Main$update = F2(
 							model,
 							{
 								getter: function () {
-									var _p13 = _p7._0;
-									switch (_p13.ctor) {
+									var _p14 = _p8._0;
+									switch (_p14.ctor) {
 										case 'TenMins':
 											return function (_) {
 												return _.mins;

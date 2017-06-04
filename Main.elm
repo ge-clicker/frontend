@@ -6,7 +6,7 @@ import Json.Decode as Decode exposing (Decoder)
 import Json.Encode as Encode
 import Html exposing (Html, body, div, h1, img, option, program, select, text)
 import Html.Attributes exposing (align, src, style, value)
-import Html.Events exposing (onClick, onMouseDown)
+import Html.Events exposing (on, onClick, onMouseDown, targetValue)
 import Http
 import Json.Decode.Pipeline exposing (decode, hardcoded, optional, required)
 import List
@@ -314,16 +314,39 @@ view model =
             ]
 
 
+targetValueRoleDecoder : Decode.Decoder SelectType
+targetValueRoleDecoder =
+    targetValue
+        |> Decode.andThen
+            (\val ->
+                case val of
+                    "ten_minutes" ->
+                        Decode.succeed TenMins
+
+                    "one_hour" ->
+                        Decode.succeed Hour
+
+                    "one_day" ->
+                        Decode.succeed Day
+
+                    "all_time" ->
+                        Decode.succeed Total
+
+                    _ ->
+                        Decode.fail ("Invalid Role: " ++ val)
+            )
+
+
 selectView : Html Msg
 selectView =
-    select []
-        [ option [ onMouseDown (Selected TenMins), value "ten_minutes" ]
-            [ text "30 Seconds" ]
-        , option [ onMouseDown (Selected Hour), value "one_hour" ]
-            [ text "1 Hour" ]
-        , option [ onMouseDown (Selected Day), value "one_day" ]
-            [ text "1 Day" ]
-        , option [ onMouseDown (Selected Total), value "all_time" ]
+    select [ on "change" (Decode.map Selected targetValueRoleDecoder) ]
+        [ option [ value "ten_minutes" ]
+            [ text "5 Seconds" ]
+        , option [ value "one_hour" ]
+            [ text "10 Seconds" ]
+        , option [ value "one_day" ]
+            [ text "1 Minute" ]
+        , option [ value "all_time" ]
             [ text "All time" ]
         ]
 

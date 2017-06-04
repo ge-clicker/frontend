@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html><head><meta charset="UTF-8"><title>Main</title><style>html,head,body { padding:0; margin:0; height:100%}
+<html><head><meta charset="UTF-8"><title>Main</title><style>html,head,body { padding:0; margin:0; height:100%; }
 body { font-family: calibri, helvetica, arial, sans-serif; }</style><script type="text/javascript">
 (function() {
 'use strict';
@@ -10787,8 +10787,14 @@ var _user$project$Main$viewParty = F4(
 	function (party, myClicks, _p1, getter) {
 		var _p2 = _p1;
 		var _p3 = _p2._0;
-		var pos = _elm_lang$core$Basics$toFloat(
-			getter(party.clicks) - _p3) / _elm_lang$core$Basics$toFloat(_p2._1 - _p3);
+		var numClicks = A2(
+			F2(
+				function (x, y) {
+					return x + y;
+				}),
+			myClicks,
+			getter(party.clicks));
+		var pos = _elm_lang$core$Basics$toFloat(numClicks - _p3) / _elm_lang$core$Basics$toFloat(_p2._1 - _p3);
 		var block = F2(
 			function (flex, colour) {
 				return A2(
@@ -10990,14 +10996,7 @@ var _user$project$Main$viewParty = F4(
 							{
 								ctor: '::',
 								_0: _elm_lang$html$Html$text(
-									_elm_lang$core$Basics$toString(
-										A2(
-											F2(
-												function (x, y) {
-													return x + y;
-												}),
-											myClicks,
-											getter(party.clicks)))),
+									_elm_lang$core$Basics$toString(numClicks)),
 								_1: {ctor: '[]'}
 							}),
 						_1: {ctor: '[]'}

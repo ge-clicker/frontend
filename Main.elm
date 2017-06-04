@@ -343,8 +343,12 @@ viewParty party myClicks ( mn, mx ) getter =
         emptyFlex =
             block 2 "none"
 
+        numClicks =
+            getter party.clicks
+                |> (+) myClicks
+
         pos =
-            (toFloat <| getter party.clicks - mn) / (toFloat <| mx - mn)
+            (toFloat <| numClicks - mn) / (toFloat <| mx - mn)
     in
         div
             [ onClick (ClickEvent party.id)
@@ -397,8 +401,7 @@ viewParty party myClicks ( mn, mx ) getter =
                     , ( "width", "100%" )
                     ]
                 ]
-                [ getter party.clicks
-                    |> (+) myClicks
+                [ numClicks
                     |> toString
                     |> text
                 ]

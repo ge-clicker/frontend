@@ -4,8 +4,8 @@ import AnimationFrame exposing (..)
 import Debug
 import Json.Decode as Decode exposing (Decoder)
 import Json.Encode as Encode
-import Html exposing (Html, div, h1, img, program, text)
-import Html.Attributes exposing (align, src, style)
+import Html exposing (Html, body, div, h1, img, option, program, select, text)
+import Html.Attributes exposing (align, src, style, value)
 import Html.Events exposing (onClick)
 import Http
 import Json.Decode.Pipeline exposing (decode, hardcoded, optional, required)
@@ -62,7 +62,15 @@ type alias Model =
     { parties : Parties
     , myClicks : MyClicks
     , lastReceiveTime : Time
+    , getter : Clicks -> Int
     }
+
+
+type SelectType
+    = TenMins
+    | Hour
+    | Day
+    | Total
 
 
 type Msg
@@ -72,6 +80,7 @@ type Msg
     | SendClicks
     | Tick Time
     | ClickEvent Int
+    | Selected SelectType
 
 
 api : String -> String
@@ -90,6 +99,7 @@ init =
     ( { parties = []
       , myClicks = []
       , lastReceiveTime = 0
+      , getter = .total
       }
     , Http.send InitialRequest <| Http.get (api "party") initialDecoder
     )
@@ -195,6 +205,25 @@ update msg model =
                 , Cmd.none
                 )
 
+            Selected s ->
+                ( { model
+                    | getter =
+                        case s of
+                            TenMins ->
+                                .mins
+
+                            Hour ->
+                                .hour
+
+                            Day ->
+                                .day
+
+                            Total ->
+                                .total
+                  }
+                , Cmd.none
+                )
+
             Tick time ->
                 -- TODO
                 debug
@@ -246,7 +275,7 @@ view model =
     let
         countClicks =
             Debug.log "list" <|
-                List.map (\p -> p.clicks.total) <|
+                List.map (\p -> model.getter p.clicks) <|
                     Debug.log "parties" model.parties
 
         minMax =
@@ -257,29 +286,50 @@ view model =
                 _ ->
                     ( 0, 1 )
     in
-        div
+        body
             [ style
-                [ ( "display", "flex" )
-                , ( "flex-direction", "row" )
-                , ( "width", "100%" )
-                , ( "height", "90%" )
-                ]
+                [ ( "height", "100%" ) ]
             ]
-            (List.map
-                (\party ->
-                    case find (\click -> click.id == party.id) model.myClicks of
-                        Just click ->
-                            viewParty party click.count minMax
+            [ div
+                [ style
+                    [ ( "display", "flex" )
+                    , ( "flex-direction", "row" )
+                    , ( "width", "100%" )
+                    , ( "height", "90%" )
+                    ]
+                ]
+                (selectView
+                    :: (List.map
+                            (\party ->
+                                case find (\click -> click.id == party.id) model.myClicks of
+                                    Just click ->
+                                        viewParty party click.count minMax model.getter
 
-                        Nothing ->
-                            viewParty party 0 minMax
+                                    Nothing ->
+                                        viewParty party 0 minMax model.getter
+                            )
+                            model.parties
+                       )
                 )
-                model.parties
-            )
+            ]
 
 
-viewParty : Party -> Int -> ( Int, Int ) -> Html Msg
-viewParty party myClicks ( mn, mx ) =
+selectView : Html Msg
+selectView =
+    select []
+        [ option [ onClick (Selected TenMins), value "ten_minutes" ]
+            [ text "10 Minutes" ]
+        , option [ onClick (Selected Hour), value "one_hour" ]
+            [ text "1 Hour" ]
+        , option [ onClick (Selected Day), value "one_day" ]
+            [ text "1 Day" ]
+        , option [ onClick (Selected Total), value "all_time" ]
+            [ text "All time" ]
+        ]
+
+
+viewParty : Party -> Int -> ( Int, Int ) -> (Clicks -> Int) -> Html Msg
+viewParty party myClicks ( mn, mx ) getter =
     let
         block flex colour =
             div
@@ -294,7 +344,7 @@ viewParty party myClicks ( mn, mx ) =
             block 2 "none"
 
         pos =
-            (toFloat <| party.clicks.total - mn) / (toFloat <| mx - mn)
+            (toFloat <| getter party.clicks - mn) / (toFloat <| mx - mn)
     in
         div
             [ onClick (ClickEvent party.id)
@@ -347,7 +397,7 @@ viewParty party myClicks ( mn, mx ) =
                     , ( "width", "100%" )
                     ]
                 ]
-                [ party.clicks.total
+                [ getter party.clicks
                     |> (+) myClicks
                     |> toString
                     |> text

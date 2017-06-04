@@ -10685,18 +10685,110 @@ var _user$project$Main$MyClick = F2(
 	function (a, b) {
 		return {count: a, id: b};
 	});
-var _user$project$Main$Model = F3(
-	function (a, b, c) {
-		return {parties: a, myClicks: b, lastReceiveTime: c};
+var _user$project$Main$Model = F4(
+	function (a, b, c, d) {
+		return {parties: a, myClicks: b, lastReceiveTime: c, getter: d};
+	});
+var _user$project$Main$Total = {ctor: 'Total'};
+var _user$project$Main$Day = {ctor: 'Day'};
+var _user$project$Main$Hour = {ctor: 'Hour'};
+var _user$project$Main$TenMins = {ctor: 'TenMins'};
+var _user$project$Main$Selected = function (a) {
+	return {ctor: 'Selected', _0: a};
+};
+var _user$project$Main$selectView = A2(
+	_elm_lang$html$Html$select,
+	{ctor: '[]'},
+	{
+		ctor: '::',
+		_0: A2(
+			_elm_lang$html$Html$option,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Events$onMouseDown(
+					_user$project$Main$Selected(_user$project$Main$TenMins)),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$value('ten_minutes'),
+					_1: {ctor: '[]'}
+				}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text('10 Minutes'),
+				_1: {ctor: '[]'}
+			}),
+		_1: {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$option,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onMouseDown(
+						_user$project$Main$Selected(_user$project$Main$Hour)),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$value('one_hour'),
+						_1: {ctor: '[]'}
+					}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('1 Hour'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$option,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onMouseDown(
+							_user$project$Main$Selected(_user$project$Main$Day)),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$value('one_day'),
+							_1: {ctor: '[]'}
+						}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('1 Day'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$option,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onMouseDown(
+								_user$project$Main$Selected(_user$project$Main$Total)),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$value('all_time'),
+								_1: {ctor: '[]'}
+							}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('All time'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			}
+		}
 	});
 var _user$project$Main$ClickEvent = function (a) {
 	return {ctor: 'ClickEvent', _0: a};
 };
-var _user$project$Main$viewParty = F3(
-	function (party, myClicks, _p1) {
+var _user$project$Main$viewParty = F4(
+	function (party, myClicks, _p1, getter) {
 		var _p2 = _p1;
 		var _p3 = _p2._0;
-		var pos = _elm_lang$core$Basics$toFloat(party.clicks.total - _p3) / _elm_lang$core$Basics$toFloat(_p2._1 - _p3);
+		var pos = _elm_lang$core$Basics$toFloat(
+			getter(party.clicks) - _p3) / _elm_lang$core$Basics$toFloat(_p2._1 - _p3);
 		var block = F2(
 			function (flex, colour) {
 				return A2(
@@ -10905,7 +10997,7 @@ var _user$project$Main$viewParty = F3(
 													return x + y;
 												}),
 											myClicks,
-											party.clicks.total))),
+											getter(party.clicks)))),
 								_1: {ctor: '[]'}
 							}),
 						_1: {ctor: '[]'}
@@ -10920,7 +11012,7 @@ var _user$project$Main$view = function (model) {
 		A2(
 			_elm_lang$core$List$map,
 			function (p) {
-				return p.clicks.total;
+				return model.getter(p.clicks);
 			},
 			A2(_elm_lang$core$Debug$log, 'parties', model.parties)));
 	var minMax = function () {
@@ -10939,45 +11031,65 @@ var _user$project$Main$view = function (model) {
 		}
 	}();
 	return A2(
-		_elm_lang$html$Html$div,
+		_elm_lang$html$Html$body,
 		{
 			ctor: '::',
 			_0: _elm_lang$html$Html_Attributes$style(
 				{
 					ctor: '::',
-					_0: {ctor: '_Tuple2', _0: 'display', _1: 'flex'},
-					_1: {
-						ctor: '::',
-						_0: {ctor: '_Tuple2', _0: 'flex-direction', _1: 'row'},
-						_1: {
-							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'width', _1: '100%'},
-							_1: {
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'height', _1: '90%'},
-								_1: {ctor: '[]'}
-							}
-						}
-					}
+					_0: {ctor: '_Tuple2', _0: 'height', _1: '100%'},
+					_1: {ctor: '[]'}
 				}),
 			_1: {ctor: '[]'}
 		},
-		A2(
-			_elm_lang$core$List$map,
-			function (party) {
-				var _p5 = A2(
-					_elm_community$list_extra$List_Extra$find,
-					function (click) {
-						return _elm_lang$core$Native_Utils.eq(click.id, party.id);
+		{
+			ctor: '::',
+			_0: _user$project$Main$selectView,
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$style(
+							{
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'display', _1: 'flex'},
+								_1: {
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'flex-direction', _1: 'row'},
+									_1: {
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: 'width', _1: '100%'},
+										_1: {
+											ctor: '::',
+											_0: {ctor: '_Tuple2', _0: 'height', _1: '90%'},
+											_1: {ctor: '[]'}
+										}
+									}
+								}
+							}),
+						_1: {ctor: '[]'}
 					},
-					model.myClicks);
-				if (_p5.ctor === 'Just') {
-					return A3(_user$project$Main$viewParty, party, _p5._0.count, minMax);
-				} else {
-					return A3(_user$project$Main$viewParty, party, 0, minMax);
-				}
-			},
-			model.parties));
+					A2(
+						_elm_lang$core$List$map,
+						function (party) {
+							var _p5 = A2(
+								_elm_community$list_extra$List_Extra$find,
+								function (click) {
+									return _elm_lang$core$Native_Utils.eq(click.id, party.id);
+								},
+								model.myClicks);
+							if (_p5.ctor === 'Just') {
+								return A4(_user$project$Main$viewParty, party, _p5._0.count, minMax, model.getter);
+							} else {
+								return A4(_user$project$Main$viewParty, party, 0, minMax, model.getter);
+							}
+						},
+						model.parties)),
+				_1: {ctor: '[]'}
+			}
+		});
 };
 var _user$project$Main$Tick = function (a) {
 	return {ctor: 'Tick', _0: a};
@@ -11133,6 +11245,39 @@ var _user$project$Main$update = F2(
 						{lastReceiveTime: _p7._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
+			case 'Selected':
+				return {
+					ctor: '_Tuple2',
+					_0: A2(
+						_elm_lang$core$Debug$log,
+						'selected model',
+						_elm_lang$core$Native_Utils.update(
+							model,
+							{
+								getter: function () {
+									var _p13 = _p7._0;
+									switch (_p13.ctor) {
+										case 'TenMins':
+											return function (_) {
+												return _.mins;
+											};
+										case 'Hour':
+											return function (_) {
+												return _.hour;
+											};
+										case 'Day':
+											return function (_) {
+												return _.day;
+											};
+										default:
+											return function (_) {
+												return _.total;
+											};
+									}
+								}()
+							})),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
 			default:
 				return debug;
 		}
@@ -11145,7 +11290,10 @@ var _user$project$Main$init = {
 	_0: {
 		parties: {ctor: '[]'},
 		myClicks: {ctor: '[]'},
-		lastReceiveTime: 0
+		lastReceiveTime: 0,
+		getter: function (_) {
+			return _.mins;
+		}
 	},
 	_1: A2(
 		_elm_lang$http$Http$send,
